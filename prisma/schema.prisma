@@ -1,0 +1,138 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  description String?
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id     Int              @id @default(autoincrement())
+  name   String           @unique
+  module String?
+  roles  RolePermission[]
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model User {
+  id                  Int                   @id @default(autoincrement())
+  firstName           String
+  lastName            String
+  email               String                @unique
+  phoneNumber         String                @unique
+  password            String
+  roleId              Int
+  role                Role                  @relation(fields: [roleId], references: [id])
+  status              Status                @default(ACTIVE)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  deletedAt           DateTime?
+  StudentAcademicInfo StudentAcademicInfo[]
+  Student             Student?
+  TeacherAcademicInfo TeacherAcademicInfo[]
+  Teacher             Teacher?
+}
+
+model StudentAcademicInfo {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id])
+  session    String
+  classSt    String
+  rollNumber String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@index([userId])
+}
+
+model Student {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @unique
+  user             User      @relation(fields: [userId], references: [id])
+  admissionDate    DateTime
+  dateOfBirth      DateTime?
+  gender           String
+  religion         String?
+  caste            String?
+  bloodGroup       String?
+  disability       String?
+  disease          String?
+  fatherName       String?
+  motherName       String?
+  guardianName     String?
+  emergencyContact String?
+  address1         String?
+  address2         String?
+  notes            String?
+  studentImage     String?
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model TeacherAcademicInfo {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  session   String
+  classSt   String
+  subject   String
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Teacher {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @unique
+  user             User      @relation(fields: [userId], references: [id])
+  joiningDate      DateTime
+  dateOfBirth      DateTime?
+  gender           String
+  religion         String?
+  caste            String?
+  bloodGroup       String?
+  disability       String?
+  fatherName       String?
+  motherName       String?
+  emergencyContact String?
+  address1         String?
+  address2         String?
+  notes            String?
+  teacherImage     String?
+  deletedAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
