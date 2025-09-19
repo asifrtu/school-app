@@ -158,7 +158,7 @@ export default function StudentForm() {
           variant="info"
           message="Please first Create the Parent, Class, and Stream."
         />
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+<div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
   <h1 className="text-2xl font-bold">Create Student</h1>
 
   {/* Centered Progress Bar on md and larger */}
@@ -187,11 +187,11 @@ export default function StudentForm() {
       </Button>
     )}
   </div>
-</div>
+        </div>
 
 
-        {/* Form */}
-        <form id="single-student-form" onSubmit={handleSubmit(onSubmit)}>
+          {/* Form */}
+          <form id="single-student-form" onSubmit={handleSubmit(onSubmit)}>
           {step === 1 && (
             <>
               <FormInfo message="Student Basic Information | Personal Details" />

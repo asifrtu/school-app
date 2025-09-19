@@ -162,6 +162,7 @@ model Session {
   id                 String @id @default(uuid())
   name               String
   shortCode          String
+  teacherName        String
   description        String
   createdAt          DateTime @default(now())
   student            StudentAcademicInfo[]  
@@ -185,7 +186,10 @@ model Section {
 model Subject {
   id        String   @id @default(uuid())
   name      String
+  fullMarks Int
+  passMarks Int
   code      String
+  teacher   String
   createdAt DateTime @default(now())
   teacher   TeacherAcademicDInfo[]
   lession   Lession[]

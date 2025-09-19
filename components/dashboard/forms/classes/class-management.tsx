@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import Section from "../section/section"
+import SingleClassForm from "./single-class-form"
 
 interface ClassData {
   id: number
@@ -462,46 +464,7 @@ export default function ClassManagement() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           {/* Classes Tab */}
           <TabsContent value="classes" className="flex-1 flex flex-col mt-0">
-            <div className="bg-white border-b border-gray-200 p-6">
-              <Button onClick={() => setShowAddClass(true)} className="flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                Add Class
-              </Button>
-            </div>
-
-            {/* Add Class Form */}
-            {showAddClass && (
-              <div className="mx-6 mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Class</h3>
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Class Name</label>
-                    <Input
-                      placeholder="Enter class name..."
-                      value={newClassName}
-                      onChange={(e) => setNewClassName(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleAddClass()}
-                      className="bg-white"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button onClick={handleAddClass} size="sm">
-                    Add Class
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setShowAddClass(false)
-                      setNewClassName("")
-                    }}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
+            <SingleClassForm />
 
             {/* Classes Grid */}
             <div className="flex-1 p-6">
@@ -617,56 +580,7 @@ export default function ClassManagement() {
 
           {/* Sections Tab */}
           <TabsContent value="sections" className="flex-1 flex flex-col mt-0">
-            <div className="bg-white border-b border-gray-200 p-6">
-              <Button onClick={() => setShowAddSection(true)} className="flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                Add Section
-              </Button>
-            </div>
-
-            {/* Add Section Form */}
-            {showAddSection && (
-              <div className="mx-6 mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Section</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Section Name</label>
-                    <Input
-                      placeholder="e.g., A, B, C..."
-                      value={newSectionName}
-                      onChange={(e) => setNewSectionName(e.target.value)}
-                      className="bg-white"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Class Teacher</label>
-                    <Input
-                      placeholder="Enter teacher name..."
-                      value={newTeacherName}
-                      onChange={(e) => setNewTeacherName(e.target.value)}
-                      className="bg-white"
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button onClick={handleAddSection} size="sm">
-                    Add Section
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setShowAddSection(false)
-                      setNewSectionName("")
-                      setNewTeacherName("")
-                    }}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
-
+            <Section />
             {/* Sections Grid */}
             <div className="flex-1 p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

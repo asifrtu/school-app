@@ -136,3 +136,31 @@ model Teacher {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
+
+
+model Class   {
+  id          Int       @id @default(autoincrement())
+  name        String
+  createdAt   DateTime @default(now())
+}
+
+model Section {
+  id         Int       @id @default(autoincrement())
+  name       String
+  classId    Int
+  class      Class     @relation(fields: [classId], references: [id])
+  teacherId  Int
+  teacher    User      @relation(fields: [teacherId], references: [id])
+  createdAt  DateTime  @default(now())
+}
+
+model Subject {
+  id          Int       @id @default(autoincrement())
+  name        String
+  classId     Int
+  class       Class     @relation(fields: [classId], references: [id])
+  fullMarks   Int
+  passMarks   Int
+  code        String
+  createdAt   DateTime @default(now())
+}

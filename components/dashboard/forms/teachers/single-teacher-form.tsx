@@ -1,7 +1,5 @@
 "use client";
 
-
-import { nullable, z, ZodError } from "zod";
 import {useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Mail, Phone, User } from "lucide-react";
@@ -11,20 +9,22 @@ import PasswordInput from "@/components/FormInputs/PasswordInput";
 import FormSelectInput from "@/components/FormInputs/FormSelectInput";
 import TextAreaInput from "@/components/FormInputs/TextAreaInput";
 import InfoBanner from "@/components/info-banner";
-import axios, { AxiosError } from "axios";
-import { NextResponse } from "next/server";
 import FormInfo from "@/components/info/form-info";
 import { toast, ToastT } from "sonner";
 import { UploadButton } from "@/lib/uploadthing";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TeacherSchema, Status, TeacherInput } from "@/schemas/teacherSchema";
+import { createTeacherThunk } from "@/features/teacher/teacherThunks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useSelector } from "react-redux";
 
 
 export default function SingleTeacherForm() {
 
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-    const [imageName, setImageName] = useState<string>(""); 
-
+  const [imageName, setImageName] = useState<string>(""); 
+  const dispatch = useAppDispatch();
+  const { data, error } = useSelector((state: any) => state.teacher);
   type Option = {
     value: string; // ❗ Change this from `string | number` to `string`
     label: string;
@@ -117,41 +117,22 @@ export default function SingleTeacherForm() {
   const router = useRouter();
 
 
-  const onSubmit = async (data: TeacherInput) => {
-  try {
-      const payload = {
-        ...data,
-        teacherImage: imageName,
-      };
-    // Submit the form data via Axios
-    const res = await axios.post("/api/teacher", payload, 
-      // { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-   
-    console.log("resData", res.data.message);
-    toast.success(res.data.message);
-    // router.push('/dashboard/students'); // Uncomment if you need to redirect
-  } catch (error) {
-  if (axios.isAxiosError(error)) {
-    if (error.response?.status === 409) {
-      // Conflict - email or phone exists
-      toast.error(error.response.data.message);
-    } else if (error.response?.status === 422) {
-      // Validation error
-      toast.error(error.response.data.message);
-      alert(error.response.data.message);
-    } else {
-      // Other errors
-      alert("Request failed: " + (error.response?.data?.message || error.message));
-    }
-  } else {
-    alert("Unexpected error");
-  }
-}
+const onSubmit = async (data: TeacherInput) => {
+    const payload = {
+      ...data,
+      teacherImage: imageName,
+    };
+    dispatch(createTeacherThunk(payload));
 };
 
-
+useEffect(() => {
+    if (data) {
+      toast.success(data.message);
+    }
+    if (error) {
+      toast.error(error.message);
+    }
+  }, [data, error]);
 
   return (
     <div className="w-full dark:bg-black dark:text-white shadow mb-5 pb-5">

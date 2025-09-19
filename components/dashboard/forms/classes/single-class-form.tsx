@@ -1,97 +1,91 @@
-"use client";
+import TextInput from '@/components/FormInputs/TextInput'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { createClassApi } from '@/features/class/classApi'
+import { useAppDispatch } from '@/hooks/useAppDispatch'
+import { classInput, classSchema } from '@/schemas/classSchema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'sonner'
 
-import { z } from "zod"
-import { Controller, useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { Mail, Phone, User } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod"
-import TextInput from "@/components/FormInputs/TextInput";
-import PasswordInput from "@/components/FormInputs/PasswordInput";
-import FormSelectInput from "@/components/FormInputs/FormSelectInput";
-import UploadStudentImageForm from "@/components/upload-student-image-form";
-import { singleStudentSchema } from "@/schemas/studentSchema";
-import TextAreaInput from "@/components/FormInputs/TextAreaInput";
-
-export default function SingleClassForm() {
-// const initialImage = initialData?.imageUrl || "/placeholder.png"; // Replace with your actual initial image URL
+function SingleClassForm() {
+  const [showAddClass, setShowAddClass] = useState(false);
+  const dispatch = useAppDispatch();
+    const { data, error } = useSelector((state: any) => state.class);
   const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<z.infer<typeof singleStudentSchema>>({
-    resolver: zodResolver(singleStudentSchema),
-  });
-  const router = useRouter();
+      control,
+      handleSubmit,
+      formState: { errors },
+    } = useForm<classInput>({
+      resolver: zodResolver(classSchema),
+      defaultValues: {
+        name: '',
+      },
+    });
 
-  const onSubmit = async (data: z.infer<typeof singleStudentSchema>) => {
-   alert("Class created successfully");
-    console.log("Submitted Data:", data);
-  }
+    const onSubmit = async (data: classInput) => {
+        const payload = {
+          ...data,
+        };
+        dispatch(createClassApi(payload));
+      };
+      useEffect(() => {
+        if (data) {
+          toast.success(data.message);
+        }
+        if (error) {
+          toast.error(error.message);
+        }
+      }, [data, error]);
 
   return (
-    <div className="w-full dark:bg-black dark:text-white border border-t-4 border-gray-600 rounded-md mb-5 pb-5">
-      <div className="mx-auto dark:bg-black px-4 pt-2 shadow">
-        {/* Header */}
-        
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
-          <h1 className="text-2xl font-bold">Create Class</h1>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
-            >
-              Close
-            </button>
-            <button
-              type="submit"
-              form="single-student-form"
-              className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-blue-500"
-            >
-              Save Class
-            </button>
-          </div>
-        </div>
+          <div>
+            <div className="bg-white border-b border-gray-200 p-6">
+              <Button onClick={() => setShowAddClass(true)} className="flex items-center gap-2">
+                <Plus className="w-4 h-4" />
+                Add Class
+              </Button>
+            </div>
 
-        {/* Form */}
-        <form
-          id="single-student-form"
-          className="grid grid-cols-1 md:grid-cols-3 gap-x-6"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          {/* TextInput Fields */}
-          <TextInput
-            label="Full Name"
-            register={register}
-            name="fullName"
-            placeholder="Enter full name"
-            icon={User}
-            errors={errors}
-            tooltipText=""
-          />
-          <TextInput
-            label="Email Address"
-            register={register}
-            name="email"
-            type="email"
-            placeholder="Enter email"
-            icon={Mail}
-            errors={errors}
-            tooltipText=""
-          />
-          <TextInput
-            label="Phone Number"
-            register={register}
-            name="phoneNumber"
-            type="tel"
-            placeholder="Enter phoneNumber"
-            icon={Phone}
-            errors={errors}
-            tooltipText=""
-          />
-        </form>
-      </div>
-    </div>
-  );
+            {/* Add Class Form */}
+            {showAddClass && (
+              <form id="single-student-form" onSubmit={handleSubmit(onSubmit)}>
+              <div className="mx-6 mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Class</h3>
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <TextInput
+                      label="Class Name"
+                      control={control}
+                      name="name"
+                      type="text"
+                      placeholder="Enter Class Name"
+                      errors={errors}
+                      tooltipText=""
+                    />
+                    
+                  </div>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Button type='submit' size="sm">
+                    Add Class
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAddClass(false)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+              </form>
+            )}
+          </div>
+  )
 }
+
+export default SingleClassForm
